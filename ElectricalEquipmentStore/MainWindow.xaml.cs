@@ -1,4 +1,5 @@
 ﻿using ElectricalEquipmentStore.Pages;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,157 +18,87 @@ namespace ElectricalEquipmentStore
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Frame MainFrame => MainContentFrame;
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
         }
 
-        // Обновляем видимость кнопок при навигации
-        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Скрываем кнопку "Назад" на странице логина
-            if (e.Content is LoginPage)
-            {
-                BackButton.Visibility = Visibility.Collapsed;
-                HideAllNavigationButtons();
-            }
-            else
-            {
-                BackButton.Visibility = MainContentFrame.CanGoBack ?
-                    Visibility.Visible : Visibility.Collapsed;
+            // Получаем роль пользователя из Application.Properties
+            var role = Application.Current.Properties["UserRole"] as string;
 
-                // Показываем кнопки навигации в зависимости от роли
-                ShowNavigationButtonsForCurrentRole();
-
-                // Обновляем имя пользователя
-                UpdateUserInfo();
-            }
+            // Создаем ViewModel с передачей IServiceProvider
+            var serviceProvider = (Application.Current as App)!.ServiceProvider;
+            DataContext = new ViewModels.MainWindowViewModel(role, serviceProvider);
         }
 
-        private void HideAllNavigationButtons()
-        {
-            CatalogButton.Visibility = Visibility.Collapsed;
-            CartButton.Visibility = Visibility.Collapsed;
-            OrdersButton.Visibility = Visibility.Collapsed;
-            OrderManagementButton.Visibility = Visibility.Collapsed;
-            SuppliesButton.Visibility = Visibility.Collapsed;
-            AdminPanelButton.Visibility = Visibility.Collapsed;
-            LogoutButton.Visibility = Visibility.Collapsed;
-            UserNameText.Visibility = Visibility.Collapsed;
-        }
+        public Frame MainFrame => MainContentFrame;
 
-        private void ShowNavigationButtonsForCurrentRole()
-        {
-            // Получаем роль пользователя
-            if (Application.Current.Properties.Contains("UserRole"))
-            {
-                var role = Application.Current.Properties["UserRole"] as string;
-
-                // Базовые кнопки для всех авторизованных пользователей
-                CatalogButton.Visibility = Visibility.Visible;
-                CartButton.Visibility = Visibility.Visible;
-                OrdersButton.Visibility = Visibility.Visible;
-                LogoutButton.Visibility = Visibility.Visible;
-                UserNameText.Visibility = Visibility.Visible;
-
-                // Кнопки для сотрудников
-                bool isEmployeeOrAdmin = role == "Сотрудник" || role == "Администратор";
-                OrderManagementButton.Visibility = isEmployeeOrAdmin ?
-                    Visibility.Visible : Visibility.Collapsed;
-                SuppliesButton.Visibility = isEmployeeOrAdmin ?
-                    Visibility.Visible : Visibility.Collapsed;
-
-                // Кнопки для администраторов
-                AdminPanelButton.Visibility = role == "Администратор" ?
-                    Visibility.Visible : Visibility.Collapsed;
-            }
-            else
-            {
-                // Если роль не определена, скрываем все кнопки
-                HideAllNavigationButtons();
-            }
-        }
-
-        private void UpdateUserInfo()
-        {
-            if (Application.Current.Properties.Contains("CurrentUser"))
-            {
-                var user = Application.Current.Properties["CurrentUser"] as Models.User;
-                if (user != null)
-                {
-                    UserNameText.Text = $"{user.Name} {user.Surname}";
-                }
-            }
-        }
-
-        // Обработчики кнопок навигации
+        // Обработчики событий навигации (если они у вас есть в XAML)
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (MainContentFrame.CanGoBack)
-            {
                 MainContentFrame.GoBack();
-            }
         }
 
+        private void MainContentFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            // Обновляем видимость кнопки "Назад"
+            BackButton.Visibility = MainContentFrame.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Обработчики для кнопок навигации (если они у вас в XAML)
         private void CatalogButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу каталога
-            var catalogPage = new CatalogPage();
-            MainContentFrame.Navigate(catalogPage);
+            var serviceProvider = (Application.Current as App)!.ServiceProvider;
+            var clientPage = serviceProvider.GetRequiredService<Pages.ClientPage>();
+            MainContentFrame.Navigate(clientPage);
         }
 
         private void CartButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу корзины
             MessageBox.Show("Страница корзины в разработке", "Информация",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OrdersButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу заказов
             MessageBox.Show("Страница заказов в разработке", "Информация",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OrderManagementButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на управление заказами (для сотрудников)
-            MessageBox.Show("Управление заказами в разработке", "Информация",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            var serviceProvider = (Application.Current as App)!.ServiceProvider;
+            var employeePage = serviceProvider.GetRequiredService<Pages.EmployeePage>();
+            MainContentFrame.Navigate(employeePage);
         }
 
         private void SuppliesButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на управление поставками (для сотрудников)
             MessageBox.Show("Управление поставками в разработке", "Информация",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на админ панель
-            MainContentFrame.Navigate(new AdminPage());
+            var serviceProvider = (Application.Current as App)!.ServiceProvider;
+            var adminPage = serviceProvider.GetRequiredService<Pages.AdminPage>();
+            MainContentFrame.Navigate(adminPage);
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            // Выход из системы
-            var result = MessageBox.Show("Вы уверены, что хотите выйти?", "Выход",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            // Очищаем данные пользователя
+            Application.Current.Properties.Remove("CurrentUser");
+            Application.Current.Properties.Remove("UserRole");
 
-            if (result == MessageBoxResult.Yes)
-            {
-                // Очищаем данные пользователя
-                if (Application.Current.Properties.Contains("CurrentUser"))
-                    Application.Current.Properties.Remove("CurrentUser");
-                if (Application.Current.Properties.Contains("UserRole"))
-                    Application.Current.Properties.Remove("UserRole");
-
-                // Переходим на страницу логина
-                MainContentFrame.Navigate(new LoginPage());
-            }
+            // Переходим на страницу логина
+            var serviceProvider = (Application.Current as App)!.ServiceProvider;
+            var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
+            MainContentFrame.Navigate(loginPage);
         }
     }
 }

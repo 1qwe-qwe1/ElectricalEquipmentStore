@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using ElectricalEquipmentStore.Models;
 using ElectricalEquipmentStore.Pages;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace ElectricalEquipmentStore.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        private readonly IServiceProvider _serviceProvider;
+
         [ObservableProperty]
         private string _currentUserName;
 
@@ -28,8 +31,10 @@ namespace ElectricalEquipmentStore.ViewModels
         [ObservableProperty]
         private bool _isClient = false;
 
-        public MainWindowViewModel(string role)
+        public MainWindowViewModel(string role, IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
+
             // Получаем текущего пользователя
             var currentUser = Application.Current.Properties["CurrentUser"] as Models.User;
             CurrentUserName = $"{currentUser?.Name} {currentUser?.Surname}";
@@ -62,13 +67,16 @@ namespace ElectricalEquipmentStore.ViewModels
             switch (role)
             {
                 case "Администратор":
-                    mainWindow.MainFrame.Navigate(new AdminPage());
+                    var adminPage = _serviceProvider.GetRequiredService<AdminPage>();
+                    mainWindow.MainFrame.Navigate(adminPage);
                     break;
                 case "Сотрудник":
-                    mainWindow.MainFrame.Navigate(new EmployeePage());
+                    var employeePage = _serviceProvider.GetRequiredService<EmployeePage>();
+                    mainWindow.MainFrame.Navigate(employeePage);
                     break;
                 case "Клиент":
-                    mainWindow.MainFrame.Navigate(new CatalogPage()); // Клиент сразу видит каталог
+                    var clientPage = _serviceProvider.GetRequiredService<ClientPage>();
+                    mainWindow.MainFrame.Navigate(clientPage);
                     break;
             }
         }
@@ -84,7 +92,8 @@ namespace ElectricalEquipmentStore.ViewModels
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
             if (mainWindow != null)
             {
-                mainWindow.MainFrame.Navigate(new LoginPage());
+                var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+                mainWindow.MainFrame.Navigate(loginPage);
             }
         }
 
@@ -92,7 +101,11 @@ namespace ElectricalEquipmentStore.ViewModels
         private void NavigateToCatalog()
         {
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-            mainWindow?.MainFrame.Navigate(new CatalogPage());
+            if (mainWindow != null)
+            {
+                var clientPage = _serviceProvider.GetRequiredService<ClientPage>();
+                mainWindow.MainFrame.Navigate(clientPage);
+            }
         }
 
         [RelayCommand]
@@ -113,14 +126,22 @@ namespace ElectricalEquipmentStore.ViewModels
         private void NavigateToAdmin()
         {
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-            mainWindow?.MainFrame.Navigate(new AdminPage());
+            if (mainWindow != null)
+            {
+                var adminPage = _serviceProvider.GetRequiredService<AdminPage>();
+                mainWindow.MainFrame.Navigate(adminPage);
+            }
         }
 
         [RelayCommand]
         private void NavigateToOrderManagement()
         {
-            MessageBox.Show("Управление заказами в разработке", "Информация",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            if (mainWindow != null)
+            {
+                var employeePage = _serviceProvider.GetRequiredService<EmployeePage>();
+                mainWindow.MainFrame.Navigate(employeePage);
+            }
         }
 
         [RelayCommand]

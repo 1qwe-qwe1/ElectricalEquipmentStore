@@ -1,6 +1,7 @@
 ﻿using ElectricalEquipmentStore.Data;
 using ElectricalEquipmentStore.Pages;
 using ElectricalEquipmentStore.Services;
+using ElectricalEquipmentStore.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -73,10 +74,11 @@ namespace ElectricalEquipmentStore
             services.AddTransient<ClientPage>();
 
             // ViewModels
-            services.AddTransient<ViewModels.LoginViewModel>();
-            services.AddTransient<ViewModels.ProductViewModel>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<ProductViewModel>();
 
-            services.AddSingleton<IServiceProvider>(provider => provider);
+            services.AddSingleton<IServiceProvider>(sp => sp);
         }
 
         private bool CheckDatabaseConnection()
