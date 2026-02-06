@@ -31,7 +31,7 @@ namespace ElectricalEquipmentStore.Pages
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var authService = serviceProvider.GetRequiredService<AuthService>();
 
-            DataContext = new LoginViewModel(authService);
+            DataContext = new LoginViewModel(authService, serviceProvider);
         }
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ElectricalEquipmentStore.Models;
 using ElectricalEquipmentStore.Pages;
 using ElectricalEquipmentStore.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace ElectricalEquipmentStore.ViewModels
     public partial class LoginViewModel : ObservableObject
     {
         private readonly AuthService _authService;
-        // Уберите NavigationService из конструктора
+        private readonly IServiceProvider _serviceProvider;
 
         [ObservableProperty]
         private string _userLogin = string.Empty;
@@ -30,10 +31,11 @@ namespace ElectricalEquipmentStore.ViewModels
         [ObservableProperty]
         private bool _isLoading = false;
 
-        // Конструктор с одним параметром
-        public LoginViewModel(AuthService authService)
+        // Конструктор с двумя параметрами
+        public LoginViewModel(AuthService authService, IServiceProvider serviceProvider)
         {
             _authService = authService;
+            _serviceProvider = serviceProvider;
         }
 
         [RelayCommand]
@@ -91,16 +93,25 @@ namespace ElectricalEquipmentStore.ViewModels
                 switch (role)
                 {
                     case "Администратор":
-                        mainWindow.MainFrame.Navigate(new AdminPage());
+                        var adminPage = _serviceProvider.GetRequiredService<AdminPage>();
+                        mainWindow.MainFrame.Navigate(adminPage);
                         break;
                     case "Сотрудник":
-                        mainWindow.MainFrame.Navigate(new EmployeePage());
+                        var employeePage = _serviceProvider.GetRequiredService<EmployeePage>();
+                        mainWindow.MainFrame.Navigate(employeePage);
                         break;
                     case "Клиент":
-                        mainWindow.MainFrame.Navigate(new ClientPage()); // Переходим сразу в каталог
+                        var clientPage = _serviceProvider.GetRequiredService<ClientPage>();
+                        mainWindow.MainFrame.Navigate(clientPage);
                         break;
                     default:
-                        mainWindow.MainFrame.Navigate(new CatalogPage());
+                        // Если есть CatalogPage, добавьте его в DI контейнер
+                        // var catalogPage = _serviceProvider.GetRequiredService<CatalogPage>();
+                        // mainWindow.MainFrame.Navigate(catalogPage);
+
+                        // Или пока используем ClientPage по умолчанию
+                        var defaultPage = _serviceProvider.GetRequiredService<ClientPage>();
+                        mainWindow.MainFrame.Navigate(defaultPage);
                         break;
                 }
             }

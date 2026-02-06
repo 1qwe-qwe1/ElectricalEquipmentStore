@@ -63,6 +63,7 @@ namespace ElectricalEquipmentStore
 
             // Сервисы
             services.AddTransient<AuthService>();
+            services.AddTransient<ProductService>();
 
             // Окна и страницы
             services.AddTransient<MainWindow>();
@@ -73,6 +74,9 @@ namespace ElectricalEquipmentStore
 
             // ViewModels
             services.AddTransient<ViewModels.LoginViewModel>();
+            services.AddTransient<ViewModels.ProductViewModel>();
+
+            services.AddSingleton<IServiceProvider>(provider => provider);
         }
 
         private bool CheckDatabaseConnection()

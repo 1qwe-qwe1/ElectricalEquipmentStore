@@ -23,63 +23,48 @@ namespace ElectricalEquipmentStore.Pages
     /// </summary>
     public partial class ClientPage : Page
     {
-        private AppDbContext _context;
+        private readonly AppDbContext _context;
         private List<Category> _categories = new();
         private System.Threading.CancellationTokenSource _searchCts;
         private int? _selectedCategoryId = null;
         private string _currentSearchText = "";
 
-        public ClientPage()
+        // Конструктор с внедрением зависимости
+        public ClientPage(AppDbContext context)
         {
+            _context = context;
             InitializeComponent();
             Loaded += Page_Loaded;
+            Unloaded += Page_Unloaded;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await InitializeDbContextAsync();
             await LoadCategoriesAsync();
             await LoadProductsAsync();
         }
 
-        private async Task InitializeDbContextAsync()
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                LoadingProgressBar.Visibility = Visibility.Visible;
-
-                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=electricalEqStore;Username=postgres;Password=782566912");
-                _context = new AppDbContext(optionsBuilder.Options);
-
-                Console.WriteLine("DbContext успешно создан");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка подключения к БД: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                throw;
-            }
-            finally
-            {
-                LoadingProgressBar.Visibility = Visibility.Collapsed;
-            }
+            // Отменяем все операции при закрытии страницы
+            _searchCts?.Cancel();
+            _searchCts?.Dispose();
+            _context?.Dispose(); // Освобождаем контекст при закрытии страницы
         }
 
         private async Task LoadCategoriesAsync()
         {
             try
             {
-                if (_context == null) return;
-
                 _categories = await _context.Categories
+                    .AsNoTracking() // Только для чтения
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                Dispatcher.Invoke(() =>
+                // Обновляем ComboBox в UI потоке
+                await Dispatcher.InvokeAsync(() =>
                 {
                     CategoryComboBox.Items.Clear();
-
                     CategoryComboBox.Items.Add(new { Name = "Все товары", Id = 0 });
 
                     foreach (var category in _categories)
@@ -101,27 +86,28 @@ namespace ElectricalEquipmentStore.Pages
         {
             try
             {
-                if (_context == null) return;
-
-                LoadingProgressBar.Visibility = Visibility.Visible;
-
-                Dispatcher.Invoke(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
+                    LoadingProgressBar.Visibility = Visibility.Visible;
                     ProductsPanel.Children.Clear();
                     NoProductsPanel.Visibility = Visibility.Collapsed;
                 });
 
+                // Используем AsNoTracking() для операций только для чтения
                 IQueryable<Product> query = _context.Products
+                    .AsNoTracking() // Важно: не отслеживаем изменения
                     .Include(p => p.Category)
                     .Include(p => p.Manufacturer)
                     .Include(p => p.Status)
                     .Where(p => p.StockQuantity > 0);
 
+                // Фильтрация по категории
                 if (_selectedCategoryId.HasValue && _selectedCategoryId > 0)
                 {
                     query = query.Where(p => p.CategoryId == _selectedCategoryId.Value);
                 }
 
+                // Фильтрация по поиску
                 if (!string.IsNullOrWhiteSpace(_currentSearchText))
                 {
                     var searchTextLower = _currentSearchText.ToLower();
@@ -135,7 +121,8 @@ namespace ElectricalEquipmentStore.Pages
                     .OrderBy(p => p.Name)
                     .ToListAsync();
 
-                Dispatcher.Invoke(() =>
+                // Отображаем товары в UI потоке
+                await Dispatcher.InvokeAsync(() =>
                 {
                     foreach (var product in products)
                     {
@@ -149,7 +136,7 @@ namespace ElectricalEquipmentStore.Pages
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     MessageBox.Show($"Ошибка загрузки товаров: {ex.Message}", "Ошибка",
                         MessageBoxButton.OK, MessageBoxImage.Error);
@@ -157,12 +144,14 @@ namespace ElectricalEquipmentStore.Pages
             }
             finally
             {
-                Dispatcher.Invoke(() =>
+                await Dispatcher.InvokeAsync(() =>
                 {
                     LoadingProgressBar.Visibility = Visibility.Collapsed;
                 });
             }
         }
+
+        // Остальной код без изменений (CreateProductCard, AddToCart, GetEmojiForCategory)
 
         private Border CreateProductCard(Product product)
         {
@@ -175,6 +164,7 @@ namespace ElectricalEquipmentStore.Pages
                 Cursor = System.Windows.Input.Cursors.Hand
             };
 
+            // Эффект при наведении
             border.MouseEnter += (s, e) =>
             {
                 border.Background = new SolidColorBrush(Color.FromRgb(245, 249, 255));
@@ -189,6 +179,7 @@ namespace ElectricalEquipmentStore.Pages
 
             var stackPanel = new StackPanel();
 
+            // Иконка товара
             var iconBorder = new Border
             {
                 Height = 90,
@@ -209,6 +200,7 @@ namespace ElectricalEquipmentStore.Pages
             iconBorder.Child = iconText;
             stackPanel.Children.Add(iconBorder);
 
+            // Название товара
             var nameText = new TextBlock
             {
                 Text = product.Name,
@@ -221,6 +213,7 @@ namespace ElectricalEquipmentStore.Pages
             };
             stackPanel.Children.Add(nameText);
 
+            // Производитель
             if (product.Manufacturer != null)
             {
                 var manufacturerText = new TextBlock
@@ -234,6 +227,7 @@ namespace ElectricalEquipmentStore.Pages
                 stackPanel.Children.Add(manufacturerText);
             }
 
+            // Цена
             var priceText = new TextBlock
             {
                 Text = $"{product.Price:N0} ₽",
@@ -244,6 +238,7 @@ namespace ElectricalEquipmentStore.Pages
             };
             stackPanel.Children.Add(priceText);
 
+            // Кнопка "В корзину"
             var button = new Button
             {
                 Content = "В корзину",
@@ -259,6 +254,7 @@ namespace ElectricalEquipmentStore.Pages
                 }
             };
 
+            // Эффект при наведении на кнопку
             button.MouseEnter += (s, e) =>
             {
                 button.Background = new SolidColorBrush(Color.FromRgb(53, 122, 232));
@@ -277,6 +273,7 @@ namespace ElectricalEquipmentStore.Pages
 
         private void AddToCart(Product product)
         {
+            // Здесь будет логика добавления в корзину
             MessageBox.Show($"Товар '{product.Name}' добавлен в корзину!\nЦена: {product.Price:N0} ₽",
                 "Товар добавлен",
                 MessageBoxButton.OK,
@@ -299,25 +296,29 @@ namespace ElectricalEquipmentStore.Pages
             };
         }
 
+        // Обработчики событий
         private async void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_context == null || CategoryComboBox.SelectedItem == null) return;
+            if (CategoryComboBox.SelectedItem == null) return;
 
             if (CategoryComboBox.SelectedItem is Category selectedCategory)
             {
                 _selectedCategoryId = (int?)selectedCategory.CategoryId;
             }
-            else if (CategoryComboBox.SelectedIndex == 0) 
+            else if (CategoryComboBox.SelectedIndex == 0) // "Все товары"
             {
                 _selectedCategoryId = null;
             }
 
+            // Загружаем товары с учетом выбранной категории
             await LoadProductsAsync();
         }
 
         private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            // Отменяем предыдущий поиск
             _searchCts?.Cancel();
+            _searchCts?.Dispose();
             _searchCts = new System.Threading.CancellationTokenSource();
 
             var searchText = SearchTextBox.Text.Trim();
@@ -325,8 +326,10 @@ namespace ElectricalEquipmentStore.Pages
 
             try
             {
+                // Ждем 500ms после последнего ввода (дебаунс)
                 await Task.Delay(500, _searchCts.Token);
 
+                // Если отмена не была запрошена, выполняем поиск
                 if (!_searchCts.Token.IsCancellationRequested)
                 {
                     await LoadProductsAsync();
@@ -334,7 +337,7 @@ namespace ElectricalEquipmentStore.Pages
             }
             catch (TaskCanceledException)
             {
-                // Поиск был отменен 
+                // Поиск был отменен - ничего не делаем
             }
         }
 
