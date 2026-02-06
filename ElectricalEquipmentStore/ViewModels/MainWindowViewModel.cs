@@ -55,17 +55,20 @@ namespace ElectricalEquipmentStore.ViewModels
 
         private void NavigateToRolePage(string role)
         {
+            // Находим главное окно
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            if (mainWindow == null) return;
+
             switch (role)
             {
                 case "Администратор":
-                    // Показываем страницу админа
-                    // Application.Current.MainWindow.MainFrame.Navigate(new AdminPage());
+                    mainWindow.MainFrame.Navigate(new AdminPage());
                     break;
                 case "Сотрудник":
-                    // Показываем страницу сотрудника
+                    mainWindow.MainFrame.Navigate(new EmployeePage());
                     break;
                 case "Клиент":
-                    // Показываем страницу клиента
+                    mainWindow.MainFrame.Navigate(new CatalogPage()); // Клиент сразу видит каталог
                     break;
             }
         }
@@ -77,31 +80,64 @@ namespace ElectricalEquipmentStore.ViewModels
             Application.Current.Properties.Remove("CurrentUser");
             Application.Current.Properties.Remove("UserRole");
 
-
-            App.NavigationService?.NavigateTo(new LoginPage());
+            // Находим главное окно
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            if (mainWindow != null)
+            {
+                mainWindow.MainFrame.Navigate(new LoginPage());
+            }
         }
-        
-
-        // Команды навигации (пока заглушки)
-        [RelayCommand]
-        private void NavigateToCatalog() { }
 
         [RelayCommand]
-        private void NavigateToOrders() { }
+        private void NavigateToCatalog()
+        {
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            mainWindow?.MainFrame.Navigate(new CatalogPage());
+        }
 
         [RelayCommand]
-        private void NavigateToCart() { }
+        private void NavigateToOrders()
+        {
+            MessageBox.Show("Страница заказов в разработке", "Информация",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         [RelayCommand]
-        private void NavigateToAdmin() { }
+        private void NavigateToCart()
+        {
+            MessageBox.Show("Страница корзины в разработке", "Информация",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         [RelayCommand]
-        private void NavigateToOrderManagement() { }
+        private void NavigateToAdmin()
+        {
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            mainWindow?.MainFrame.Navigate(new AdminPage());
+        }
 
         [RelayCommand]
-        private void NavigateToSupplies() { }
+        private void NavigateToOrderManagement()
+        {
+            MessageBox.Show("Управление заказами в разработке", "Информация",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         [RelayCommand]
-        private void GoBack() { }
+        private void NavigateToSupplies()
+        {
+            MessageBox.Show("Управление поставками в разработке", "Информация",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [RelayCommand]
+        private void GoBack()
+        {
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            if (mainWindow?.MainFrame.CanGoBack == true)
+            {
+                mainWindow.MainFrame.GoBack();
+            }
+        }
     }
 }

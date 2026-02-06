@@ -16,7 +16,7 @@ namespace ElectricalEquipmentStore
     public partial class App : Application
     {
         public IServiceProvider ServiceProvider { get; private set; }
-        public static NavigationService NavigationService { get; private set; }
+       // public static NavigationService NavigationService { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -42,11 +42,7 @@ namespace ElectricalEquipmentStore
                 var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
                 mainWindow.Show();
 
-                // 4. Инициализируем NavigationService
-                NavigationService = new NavigationService(mainWindow.MainFrame);
-
-                // 5. Загружаем стартовую страницу
-                NavigationService.NavigateTo(new LoginPage());
+                mainWindow.MainFrame.Navigate(new LoginPage());
 
                 Console.WriteLine("✅ Приложение успешно запущено");
             }

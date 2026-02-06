@@ -84,22 +84,23 @@ namespace ElectricalEquipmentStore.ViewModels
 
         private void NavigateToMainPage(string role)
         {
-            // Используем статический NavigationService из App
-            if (Application.Current is App app && App.NavigationService != null)
+            // Получаем главное окно
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+            if (mainWindow != null)
             {
                 switch (role)
                 {
                     case "Администратор":
-                        App.NavigationService.NavigateTo(new AdminPage());
+                        mainWindow.MainFrame.Navigate(new AdminPage());
                         break;
                     case "Сотрудник":
-                        App.NavigationService.NavigateTo(new EmployeePage());
+                        mainWindow.MainFrame.Navigate(new EmployeePage());
                         break;
                     case "Клиент":
-                        App.NavigationService.NavigateTo(new ClientPage());
+                        mainWindow.MainFrame.Navigate(new ClientPage()); // Переходим сразу в каталог
                         break;
                     default:
-                        App.NavigationService.NavigateTo(new ClientPage());
+                        mainWindow.MainFrame.Navigate(new CatalogPage());
                         break;
                 }
             }

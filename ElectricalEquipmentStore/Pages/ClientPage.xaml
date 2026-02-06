@@ -8,12 +8,161 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ClientPage" Background="#F5F9FF">
 
+    <Page.Resources>
+        <Style x:Key="ProductCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Padding" Value="15"/>
+        </Style>
+
+        <Style x:Key="AddToCartButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="FilterButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+    </Page.Resources>
+
     <Grid>
-        <TextBlock Text="Вы вошли как КЛИЕНТ" 
-                   FontSize="24" 
-                   FontWeight="Bold" 
-                   Foreground="#4A90E2" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель фильтров -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                Padding="20,15" 
+                Margin="0,0,0,10"
+                CornerRadius="0,0,10,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Категории -->
+                <TextBlock Grid.Column="0" 
+                           Text="Категория:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,10,0"
+                           FontWeight="SemiBold"/>
+
+                <ComboBox x:Name="CategoryComboBox" 
+                          Grid.Column="1"
+                          DisplayMemberPath="Name"
+                          SelectionChanged="CategoryComboBox_SelectionChanged"/>
+
+                <!-- Поиск -->
+                <TextBlock Grid.Column="2" 
+                           Text="Поиск:" 
+                           VerticalAlignment="Center" 
+                           Margin="30,0,10,0"
+                           FontWeight="SemiBold"/>
+
+                <TextBox x:Name="SearchTextBox" 
+                         Grid.Column="3"
+                         TextChanged="SearchTextBox_TextChanged">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                                CornerRadius="5">
+                                            <ScrollViewer x:Name="PART_ContentHost"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <!-- Кнопки -->
+                <StackPanel Grid.Column="4" 
+                            Orientation="Horizontal" 
+                            Margin="20,0,0,0">
+                    <Button Content="Сбросить" 
+                            Style="{StaticResource FilterButtonStyle}"
+                            Background="#95A5A6"
+                            Click="ResetButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Товары -->
+        <Grid Grid.Row="1">
+            <!-- Прогресс-бар -->
+            <ProgressBar x:Name="LoadingProgressBar"
+                         Height="4"
+                         IsIndeterminate="True"
+                         Visibility="Collapsed"
+                         VerticalAlignment="Top"
+                         Background="Transparent"
+                         Foreground="#4A90E2"/>
+
+            <!-- Сетка товаров -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <WrapPanel x:Name="ProductsPanel" 
+                           HorizontalAlignment="Center" 
+                           Margin="20"/>
+            </ScrollViewer>
+
+            <!-- Сообщение если нет товаров -->
+            <Border x:Name="NoProductsPanel" 
+                    Visibility="Collapsed"
+                    Background="White"
+                    CornerRadius="10"
+                    Padding="40"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="😕"
+                               FontSize="40"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,10"/>
+                    <TextBlock Text="Товары не найдены" 
+                               FontSize="18"
+                               Foreground="#7F8C8D"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Попробуйте изменить параметры поиска" 
+                               FontSize="14"
+                               Foreground="#95A5A6"
+                               HorizontalAlignment="Center"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
