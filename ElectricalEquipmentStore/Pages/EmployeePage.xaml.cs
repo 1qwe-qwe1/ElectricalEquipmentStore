@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,15 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ElectricalEquipmentStore
+namespace ElectricalEquipmentStore.Pages
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Логика взаимодействия для EmployeePage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class EmployeePage : Page
     {
-        public Frame MainFrame => MainContentFrame;
-        public MainWindow()
+        public EmployeePage()
         {
             InitializeComponent();
         }

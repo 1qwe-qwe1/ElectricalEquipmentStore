@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ElectricalEquipmentStore"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    
+    <Frame x:Name="MainContentFrame" NavigationUIVisibility="Hidden"/>
+    
 </Window>

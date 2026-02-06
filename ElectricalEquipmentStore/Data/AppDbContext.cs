@@ -6,14 +6,13 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using ElectricalEquipmentStore.Models;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace ElectricalEquipmentStore.Data
 {
     public class AppDbContext : DbContext
     {
+        
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -42,11 +41,11 @@ namespace ElectricalEquipmentStore.Data
         public DbSet<Supply> Supplies { get; set; }
         public DbSet<SupplyProduct> SupplyProducts { get; set; }
 
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }
