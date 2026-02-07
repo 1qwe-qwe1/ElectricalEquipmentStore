@@ -101,7 +101,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="🛡️" FontSize="28" VerticalAlignment="Center"/>
+                    
                     <TextBlock Text="Панель администратора" 
                                FontSize="22" 
                                FontWeight="Bold" 
@@ -163,24 +163,20 @@
                                        Margin="0,0,0,10"/>
                             <WrapPanel>
                                 <Button x:Name="AddProductBtn" 
-                                        Content="➕ Добавить товар" 
+                                        Content="Добавить товар" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="AddProduct_Click"/>
                                 <Button x:Name="EditProductBtn" 
-                                        Content="✏️ Редактировать" 
+                                        Content="Редактировать" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="EditProduct_Click"
                                         IsEnabled="False"/>
                                 <Button x:Name="DeleteProductBtn" 
-                                        Content="🗑️ Удалить" 
+                                        Content="Удалить" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Background="#E74C3C"
                                         Click="DeleteProduct_Click"
                                         IsEnabled="False"/>
-                                <Button x:Name="RefreshProductsBtn" 
-                                        Content="🔄 Обновить" 
-                                        Style="{StaticResource ActionButtonStyle}"
-                                        Click="RefreshProducts_Click"/>
                             </WrapPanel>
                         </StackPanel>
                     </Border>
@@ -233,10 +229,10 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" 
-                                       Text="Добавление/Редактирование товара" 
-                                       FontWeight="Bold"
-                                       FontSize="16"
-                                       Margin="0,0,0,15"/>
+               Text="Добавление/Редактирование товара" 
+               FontWeight="Bold"
+               FontSize="16"
+               Margin="0,0,0,15"/>
 
                             <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
@@ -254,65 +250,75 @@
 
                                 <!-- Строка 1 -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" 
-                                           Text="Артикул *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Артикул *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <TextBox Grid.Row="1" Grid.Column="0" 
-                                         x:Name="ProductSku" 
-                                         Style="{StaticResource FormTextBoxStyle}"/>
+                 x:Name="ProductSku" 
+                 Style="{StaticResource FormTextBoxStyle}"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" 
-                                           Text="Название *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Название *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" 
-                                         x:Name="ProductName" 
-                                         Style="{StaticResource FormTextBoxStyle}"/>
+                 x:Name="ProductName" 
+                 Style="{StaticResource FormTextBoxStyle}"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="2" 
-                                           Text="Цена *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Цена *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <TextBox Grid.Row="1" Grid.Column="2" 
-                                         x:Name="ProductPrice" 
-                                         Style="{StaticResource FormTextBoxStyle}"/>
+                 x:Name="ProductPrice" 
+                 Style="{StaticResource FormTextBoxStyle}"/>
 
                                 <!-- Строка 2 -->
                                 <TextBlock Grid.Row="2" Grid.Column="0" 
-                                           Text="Категория *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Категория *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="3" Grid.Column="0" 
-                                          x:Name="ProductCategory" 
-                                          Style="{StaticResource FormComboBoxStyle}"
-                                          DisplayMemberPath="Name"/>
+                  x:Name="ProductCategory" 
+                  Style="{StaticResource FormComboBoxStyle}"
+                  DisplayMemberPath="Name"/>
 
                                 <TextBlock Grid.Row="2" Grid.Column="1" 
-                                           Text="Производитель *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Производитель *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="3" Grid.Column="1" 
-                                          x:Name="ProductManufacturer" 
-                                          Style="{StaticResource FormComboBoxStyle}"
-                                          DisplayMemberPath="Name"/>
+                  x:Name="ProductManufacturer" 
+                  Style="{StaticResource FormComboBoxStyle}"
+                  DisplayMemberPath="Name"/>
 
                                 <TextBlock Grid.Row="2" Grid.Column="2" 
-                                           Text="Статус *" 
-                                           Style="{StaticResource FormLabelStyle}"/>
+                   Text="Статус *" 
+                   Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="3" Grid.Column="2" 
-                                          x:Name="ProductStatus" 
-                                          Style="{StaticResource FormComboBoxStyle}"
-                                          DisplayMemberPath="Name"/>
+                  x:Name="ProductStatus" 
+                  Style="{StaticResource FormComboBoxStyle}"
+                  DisplayMemberPath="Name"/>
+
+                                <!-- Строка 3: Количество -->
+                                <TextBlock Grid.Row="0" Grid.Column="3" 
+                   Text="Количество *" 
+                   Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" 
+                 x:Name="ProductQuantity" 
+                 Style="{StaticResource FormTextBoxStyle}"
+                 Width="100"
+                 Margin="20,0,0,0"/>
 
                                 <!-- Кнопки -->
                                 <StackPanel Grid.Row="2" Grid.Column="3" 
-                                            Grid.RowSpan="2" 
-                                            VerticalAlignment="Bottom"
-                                            Margin="20,0,0,0">
+                    Grid.RowSpan="2" 
+                    VerticalAlignment="Bottom"
+                    Margin="20,0,0,0">
                                     <Button x:Name="SaveProductBtn" 
-                                            Content="💾 Сохранить" 
-                                            Style="{StaticResource ActionButtonStyle}"
-                                            Click="SaveProduct_Click"/>
+                    Content="Сохранить" 
+                    Style="{StaticResource ActionButtonStyle}"
+                    Click="SaveProduct_Click"/>
                                     <Button x:Name="CancelProductBtn" 
-                                            Content="✖ Отмена" 
-                                            Style="{StaticResource ActionButtonStyle}"
-                                            Background="#95A5A6"
-                                            Click="CancelProduct_Click"/>
+                    Content="Отмена" 
+                    Style="{StaticResource ActionButtonStyle}"
+                    Background="#95A5A6"
+                    Click="CancelProduct_Click"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -339,14 +345,11 @@
                                        Margin="0,0,0,10"/>
                             <WrapPanel>
                                 <Button x:Name="EditOrderBtn" 
-                                        Content="✏️ Редактировать статус" 
+                                        Content="Редактировать статус" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="EditOrder_Click"
                                         IsEnabled="False"/>
-                                <Button x:Name="RefreshOrdersBtn" 
-                                        Content="🔄 Обновить" 
-                                        Style="{StaticResource ActionButtonStyle}"
-                                        Click="RefreshOrders_Click"/>
+                                
                             </WrapPanel>
                         </StackPanel>
                     </Border>
@@ -403,24 +406,21 @@
                                        Margin="0,0,0,10"/>
                             <WrapPanel>
                                 <Button x:Name="AddSupplierBtn" 
-                                        Content="➕ Добавить поставщика" 
+                                        Content="Добавить поставщика" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="AddSupplier_Click"/>
                                 <Button x:Name="EditSupplierBtn" 
-                                        Content="✏️ Редактировать" 
+                                        Content="Редактировать" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="EditSupplier_Click"
                                         IsEnabled="False"/>
                                 <Button x:Name="DeleteSupplierBtn" 
-                                        Content="🗑️ Удалить" 
+                                        Content="Удалить" 
                                         Style="{StaticResource ActionButtonStyle}"
                                         Background="#E74C3C"
                                         Click="DeleteSupplier_Click"
                                         IsEnabled="False"/>
-                                <Button x:Name="RefreshSuppliersBtn" 
-                                        Content="🔄 Обновить" 
-                                        Style="{StaticResource ActionButtonStyle}"
-                                        Click="RefreshSuppliers_Click"/>
+                                
                             </WrapPanel>
                         </StackPanel>
                     </Border>

@@ -159,7 +159,7 @@ namespace ElectricalEquipmentStore.Pages
             {
                 Style = (Style)FindResource("ProductCardStyle"),
                 Width = 220,
-                Height = 220,
+                Height = 240,
                 Margin = new Thickness(8),
                 Cursor = System.Windows.Input.Cursors.Hand
             };
@@ -183,6 +183,7 @@ namespace ElectricalEquipmentStore.Pages
             var iconBorder = new Border
             {
                 Height = 90,
+                Width = 200,
                 Background = new SolidColorBrush(Color.FromRgb(232, 244, 253)),
                 CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(0, 0, 0, 10),

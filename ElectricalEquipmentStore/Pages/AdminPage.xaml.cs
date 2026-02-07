@@ -201,9 +201,9 @@ namespace ElectricalEquipmentStore.Pages
                         CategoryId = ((Category)ProductCategory.SelectedItem).CategoryId,
                         ManufacturerId = ((Manufacturer)ProductManufacturer.SelectedItem).ManufacturerId,
                         StatusId = ((ProductStatus)ProductStatus.SelectedItem).StatusProductId,
-                        StockQuantity = 0, // По умолчанию
-                        CreatedAt = DateTime.Now,
-                        Image = "default.png", // Заглушка
+                        StockQuantity = int.Parse(ProductQuantity.Text),
+                        CreatedAt = DateTime.UtcNow,
+                        Image = "default.png",
                         Description = ""
                     };
 
@@ -217,7 +217,8 @@ namespace ElectricalEquipmentStore.Pages
                     _selectedProduct.CategoryId = ((Category)ProductCategory.SelectedItem).CategoryId;
                     _selectedProduct.ManufacturerId = ((Manufacturer)ProductManufacturer.SelectedItem).ManufacturerId;
                     _selectedProduct.StatusId = ((ProductStatus)ProductStatus.SelectedItem).StatusProductId;
-                    _selectedProduct.UpdatedAt = DateTime.Now;
+                    _selectedProduct.StockQuantity = int.Parse(ProductQuantity.Text);
+                    _selectedProduct.UpdatedAt = DateTime.UtcNow;
 
                     _context.Products.Update(_selectedProduct);
                 }
@@ -231,6 +232,15 @@ namespace ElectricalEquipmentStore.Pages
             }
             catch (Exception ex)
             {
+                // ВАЖНО: Сбрасываем состояние контекста при ошибке
+                _context.ChangeTracker.Clear();
+
+                // Также обнуляем _selectedProduct
+                _selectedProduct = null;
+
+                // Очищаем форму
+                ClearProductForm();
+
                 MessageBox.Show($"Ошибка сохранения товара: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -247,6 +257,7 @@ namespace ElectricalEquipmentStore.Pages
             ProductSku.Text = "";
             ProductName.Text = "";
             ProductPrice.Text = "";
+            ProductQuantity.Text = "";
             ProductCategory.SelectedIndex = -1;
             ProductManufacturer.SelectedIndex = -1;
             ProductStatus.SelectedIndex = -1;
@@ -258,6 +269,7 @@ namespace ElectricalEquipmentStore.Pages
             ProductSku.Text = product.Sku;
             ProductName.Text = product.Name;
             ProductPrice.Text = product.Price.ToString();
+            ProductQuantity.Text = product.StockQuantity.ToString();
 
             if (ProductCategory.ItemsSource is List<Category> categories)
                 ProductCategory.SelectedItem = categories.FirstOrDefault(c => c.CategoryId == product.CategoryId);
@@ -288,6 +300,13 @@ namespace ElectricalEquipmentStore.Pages
             if (!decimal.TryParse(ProductPrice.Text, out decimal price) || price <= 0)
             {
                 MessageBox.Show("Введите корректную цену", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!int.TryParse(ProductQuantity.Text, out int quantity) || quantity < 0)
+            {
+                MessageBox.Show("Введите корректное количество (неотрицательное число)", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
@@ -517,7 +536,7 @@ namespace ElectricalEquipmentStore.Pages
         {
             ClearSupplierForm();
             SupplierFormPanel.Visibility = Visibility.Visible;
-            SaveSupplierBtn.Content = "💾 Добавить";
+            SaveSupplierBtn.Content = "Добавить";
         }
 
         private void EditSupplier_Click(object sender, RoutedEventArgs e)
@@ -526,7 +545,7 @@ namespace ElectricalEquipmentStore.Pages
             {
                 LoadSupplierToForm(_selectedSupplier);
                 SupplierFormPanel.Visibility = Visibility.Visible;
-                SaveSupplierBtn.Content = "💾 Сохранить изменения";
+                SaveSupplierBtn.Content = "Сохранить изменения";
             }
         }
 
@@ -570,39 +589,76 @@ namespace ElectricalEquipmentStore.Pages
 
             try
             {
-                if (_selectedSupplier == null) // Добавление нового поставщика
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                try
                 {
-                    var newSupplier = new Supplier
+                    if (_selectedSupplier == null) // Добавление нового поставщика
                     {
-                        Name = SupplierName.Text.Trim(),
-                        Phone = SupplierPhone.Text.Trim(),
-                        Email = SupplierEmail.Text.Trim(),
-                        BankDetails = SupplierBankDetails.Text.Trim(),
-                        IsActive = true
-                    };
+                        var newSupplier = new Supplier
+                        {
+                            Name = SupplierName.Text.Trim(),
+                            Phone = SupplierPhone.Text.Trim(),
+                            Email = SupplierEmail.Text.Trim(),
+                            BankDetails = SupplierBankDetails.Text.Trim(),
+                            IsActive = true
+                        };
 
-                    _context.Suppliers.Add(newSupplier);
+                        _context.Suppliers.Add(newSupplier);
+                    }
+                    else // Редактирование существующего поставщика
+                    {
+                        _selectedSupplier.Name = SupplierName.Text.Trim();
+                        _selectedSupplier.Phone = SupplierPhone.Text.Trim();
+                        _selectedSupplier.Email = SupplierEmail.Text.Trim();
+                        _selectedSupplier.BankDetails = SupplierBankDetails.Text.Trim();
+
+                        _context.Suppliers.Update(_selectedSupplier);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    SupplierFormPanel.Visibility = Visibility.Collapsed;
+                    await LoadSuppliersAsync();
+
+                    MessageBox.Show("Поставщик успешно сохранен", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                else // Редактирование существующего поставщика
+                catch (DbUpdateException dbEx)
                 {
-                    _selectedSupplier.Name = SupplierName.Text.Trim();
-                    _selectedSupplier.Phone = SupplierPhone.Text.Trim();
-                    _selectedSupplier.Email = SupplierEmail.Text.Trim();
-                    _selectedSupplier.BankDetails = SupplierBankDetails.Text.Trim();
+                    await transaction.RollbackAsync();
 
-                    _context.Suppliers.Update(_selectedSupplier);
+                    string errorMessage = "Ошибка сохранения поставщика:\n";
+
+                    if (dbEx.InnerException != null)
+                    {
+                        var innerEx = dbEx.InnerException;
+                        errorMessage += innerEx.Message;
+
+                        if (innerEx.InnerException != null)
+                        {
+                            errorMessage += $"\n\nДетали:\n{innerEx.InnerException.Message}";
+                        }
+                    }
+                    else
+                    {
+                        errorMessage += dbEx.Message;
+                    }
+
+                    MessageBox.Show(errorMessage, "Ошибка базы данных",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
-                await _context.SaveChangesAsync();
-                SupplierFormPanel.Visibility = Visibility.Collapsed;
-                await LoadSuppliersAsync();
-
-                MessageBox.Show("Поставщик успешно сохранен", "Успех",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка сохранения поставщика: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
