@@ -8,12 +8,529 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AdminPage" Background="#F5F9FF">
 
+    <Page.Resources>
+        <!-- Стили -->
+        <Style x:Key="TabButtonStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,1,1,0"
+                                CornerRadius="5,5,0,0"
+                                Padding="20,10">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="White"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#DDDDDD"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F0F8FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#F9F9F9"/>
+            <Setter Property="ColumnHeaderHeight" Value="40"/>
+            <Setter Property="RowHeight" Value="35"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+        </Style>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+
+        <Style x:Key="FormTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+    </Page.Resources>
+
     <Grid>
-        <TextBlock Text="Вы вошли как АДМИНИСТРАТОР" 
-                   FontSize="24" 
-                   FontWeight="Bold" 
-                   Foreground="#4A90E2" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                Padding="30,20"
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="🛡️" FontSize="28" VerticalAlignment="Center"/>
+                    <TextBlock Text="Панель администратора" 
+                               FontSize="22" 
+                               FontWeight="Bold" 
+                               Foreground="#2C3E50"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,0"/>
+                </StackPanel>
+
+                <!-- Вкладки -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Center">
+                    <RadioButton x:Name="ProductsTab" 
+                                 Content="Товары" 
+                                 GroupName="AdminTabs"
+                                 Style="{StaticResource TabButtonStyle}"
+                                 IsChecked="True"
+                                 Click="Tab_Click"/>
+                    <RadioButton x:Name="OrdersTab" 
+                                 Content="Заказы" 
+                                 GroupName="AdminTabs"
+                                 Style="{StaticResource TabButtonStyle}"
+                                 Click="Tab_Click"/>
+                    <RadioButton x:Name="SuppliersTab" 
+                                 Content="Поставщики" 
+                                 GroupName="AdminTabs"
+                                 Style="{StaticResource TabButtonStyle}"
+                                 Click="Tab_Click"/>
+                </StackPanel>
+
+                <Button Grid.Column="2" 
+                        Content="Обновить данные" 
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="RefreshButton_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Контент -->
+        <Border Grid.Row="1" Background="White" Margin="20">
+            <Grid>
+                <!-- Товары -->
+                <Grid x:Name="ProductsPanel" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель управления -->
+                    <Border Grid.Row="0" 
+                            Background="#F8FAFD" 
+                            CornerRadius="5" 
+                            Padding="15"
+                            Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Управление товарами" 
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Margin="0,0,0,10"/>
+                            <WrapPanel>
+                                <Button x:Name="AddProductBtn" 
+                                        Content="➕ Добавить товар" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="AddProduct_Click"/>
+                                <Button x:Name="EditProductBtn" 
+                                        Content="✏️ Редактировать" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="EditProduct_Click"
+                                        IsEnabled="False"/>
+                                <Button x:Name="DeleteProductBtn" 
+                                        Content="🗑️ Удалить" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#E74C3C"
+                                        Click="DeleteProduct_Click"
+                                        IsEnabled="False"/>
+                                <Button x:Name="RefreshProductsBtn" 
+                                        Content="🔄 Обновить" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RefreshProducts_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Список товаров -->
+                    <DataGrid x:Name="ProductsGrid" 
+                              Grid.Row="1"
+                              Style="{StaticResource DataGridStyle}"
+                              SelectionChanged="ProductsGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                                                Binding="{Binding ProductId}" 
+                                                Width="60"/>
+                            <DataGridTextColumn Header="Артикул" 
+                                                Binding="{Binding Sku}" 
+                                                Width="80"/>
+                            <DataGridTextColumn Header="Название" 
+                                                Binding="{Binding Name}" 
+                                                Width="200"/>
+                            <DataGridTextColumn Header="Категория" 
+                                                Binding="{Binding Category.Name}" 
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Производитель" 
+                                                Binding="{Binding Manufacturer.Name}" 
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Цена" 
+                                                Binding="{Binding Price, StringFormat=N0 ₽}" 
+                                                Width="90"/>
+                            <DataGridTextColumn Header="Количество" 
+                                                Binding="{Binding StockQuantity}" 
+                                                Width="80"/>
+                            <DataGridTextColumn Header="Статус" 
+                                                Binding="{Binding Status.Name}" 
+                                                Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Форма товара -->
+                    <Border Grid.Row="2" 
+                            x:Name="ProductFormPanel" 
+                            Visibility="Collapsed"
+                            Background="#F8FAFD" 
+                            CornerRadius="5" 
+                            Padding="20"
+                            Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Text="Добавление/Редактирование товара" 
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Margin="0,0,0,15"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Строка 1 -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           Text="Артикул *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="0" 
+                                         x:Name="ProductSku" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" 
+                                           Text="Название *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" 
+                                         x:Name="ProductName" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" 
+                                           Text="Цена *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" 
+                                         x:Name="ProductPrice" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <!-- Строка 2 -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" 
+                                           Text="Категория *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="0" 
+                                          x:Name="ProductCategory" 
+                                          Style="{StaticResource FormComboBoxStyle}"
+                                          DisplayMemberPath="Name"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="1" 
+                                           Text="Производитель *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="1" 
+                                          x:Name="ProductManufacturer" 
+                                          Style="{StaticResource FormComboBoxStyle}"
+                                          DisplayMemberPath="Name"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="2" 
+                                           Text="Статус *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="2" 
+                                          x:Name="ProductStatus" 
+                                          Style="{StaticResource FormComboBoxStyle}"
+                                          DisplayMemberPath="Name"/>
+
+                                <!-- Кнопки -->
+                                <StackPanel Grid.Row="2" Grid.Column="3" 
+                                            Grid.RowSpan="2" 
+                                            VerticalAlignment="Bottom"
+                                            Margin="20,0,0,0">
+                                    <Button x:Name="SaveProductBtn" 
+                                            Content="💾 Сохранить" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Click="SaveProduct_Click"/>
+                                    <Button x:Name="CancelProductBtn" 
+                                            Content="✖ Отмена" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Background="#95A5A6"
+                                            Click="CancelProduct_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Заказы -->
+                <Grid x:Name="OrdersPanel" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель управления -->
+                    <Border Grid.Row="0" 
+                            Background="#F8FAFD" 
+                            CornerRadius="5" 
+                            Padding="15"
+                            Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Управление заказами" 
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Margin="0,0,0,10"/>
+                            <WrapPanel>
+                                <Button x:Name="EditOrderBtn" 
+                                        Content="✏️ Редактировать статус" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="EditOrder_Click"
+                                        IsEnabled="False"/>
+                                <Button x:Name="RefreshOrdersBtn" 
+                                        Content="🔄 Обновить" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RefreshOrders_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Список заказов -->
+                    <DataGrid x:Name="OrdersGrid" 
+                              Grid.Row="1"
+                              Style="{StaticResource DataGridStyle}"
+                              SelectionChanged="OrdersGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                                                Binding="{Binding OrderId}" 
+                                                Width="60"/>
+                            <DataGridTextColumn Header="Клиент" 
+                                                Binding="{Binding Client.User.Name}" 
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Дата" 
+                                                Binding="{Binding OrderDate, StringFormat=dd.MM.yyyy}" 
+                                                Width="100"/>
+                            <DataGridTextColumn Header="Сумма" 
+                                                Binding="{Binding TotalAmount, StringFormat=N0 ₽}" 
+                                                Width="100"/>
+                            <DataGridTextColumn Header="Статус" 
+                                                Binding="{Binding Status.Name}" 
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Оплата" 
+                                                Binding="{Binding PaymentStatus.Name}" 
+                                                Width="100"/>
+                            <DataGridTextColumn Header="Доставка" 
+                                                Binding="{Binding DeliveryMethod.Name}" 
+                                                Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+                <!-- Поставщики -->
+                <Grid x:Name="SuppliersPanel" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель управления -->
+                    <Border Grid.Row="0" 
+                            Background="#F8FAFD" 
+                            CornerRadius="5" 
+                            Padding="15"
+                            Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Управление поставщиками" 
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Margin="0,0,0,10"/>
+                            <WrapPanel>
+                                <Button x:Name="AddSupplierBtn" 
+                                        Content="➕ Добавить поставщика" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="AddSupplier_Click"/>
+                                <Button x:Name="EditSupplierBtn" 
+                                        Content="✏️ Редактировать" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="EditSupplier_Click"
+                                        IsEnabled="False"/>
+                                <Button x:Name="DeleteSupplierBtn" 
+                                        Content="🗑️ Удалить" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Background="#E74C3C"
+                                        Click="DeleteSupplier_Click"
+                                        IsEnabled="False"/>
+                                <Button x:Name="RefreshSuppliersBtn" 
+                                        Content="🔄 Обновить" 
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RefreshSuppliers_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Список поставщиков -->
+                    <DataGrid x:Name="SuppliersGrid" 
+                              Grid.Row="1"
+                              Style="{StaticResource DataGridStyle}"
+                              SelectionChanged="SuppliersGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                                                Binding="{Binding SupplierId}" 
+                                                Width="60"/>
+                            <DataGridTextColumn Header="Название" 
+                                                Binding="{Binding Name}" 
+                                                Width="200"/>
+                            <DataGridTextColumn Header="Телефон" 
+                                                Binding="{Binding Phone}" 
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Email" 
+                                                Binding="{Binding Email}" 
+                                                Width="180"/>
+                            <DataGridTextColumn Header="Активен" 
+                                                Binding="{Binding IsActive}" 
+                                                Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Форма поставщика -->
+                    <Border Grid.Row="2" 
+                            x:Name="SupplierFormPanel" 
+                            Visibility="Collapsed"
+                            Background="#F8FAFD" 
+                            CornerRadius="5" 
+                            Padding="20"
+                            Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Text="Добавление/Редактирование поставщика" 
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Margin="0,0,0,15"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Строка 1 -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           Text="Название *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="0" 
+                                         x:Name="SupplierName" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" 
+                                           Text="Телефон *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" 
+                                         x:Name="SupplierPhone" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <!-- Строка 2 -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" 
+                                           Text="Email *" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="3" Grid.Column="0" 
+                                         x:Name="SupplierEmail" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="1" 
+                                           Text="Банковские реквизиты" 
+                                           Style="{StaticResource FormLabelStyle}"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" 
+                                         x:Name="SupplierBankDetails" 
+                                         Style="{StaticResource FormTextBoxStyle}"/>
+
+                                <!-- Кнопки -->
+                                <StackPanel Grid.Row="2" Grid.Column="2" 
+                                            Grid.RowSpan="2" 
+                                            VerticalAlignment="Bottom"
+                                            Margin="20,0,0,0">
+                                    <Button x:Name="SaveSupplierBtn" 
+                                            Content="💾 Сохранить" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Click="SaveSupplier_Click"/>
+                                    <Button x:Name="CancelSupplierBtn" 
+                                            Content="✖ Отмена" 
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Background="#95A5A6"
+                                            Click="CancelSupplier_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
