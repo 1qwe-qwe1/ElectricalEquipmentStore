@@ -97,7 +97,7 @@
 
                     <!-- Приветствие -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <TextBlock Text="👨‍💼" FontSize="28" VerticalAlignment="Center"/>
+                        
                         <TextBlock Text="Панель менеджера" 
                                    FontSize="22" 
                                    FontWeight="Bold" 
@@ -106,48 +106,7 @@
                                    Margin="15,0,0,0"/>
                     </StackPanel>
 
-                    <!-- Статистика -->
-                    <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Border Background="#E8F4FD" 
-                                CornerRadius="8" 
-                                Padding="15,10"
-                                Margin="10,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📦" FontSize="20" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="OrdersCountText" 
-                                           Text="0" 
-                                           FontSize="18" 
-                                           FontWeight="Bold"
-                                           Foreground="#4A90E2"
-                                           Margin="8,0,5,0"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock Text="активных заказов" 
-                                           FontSize="13"
-                                           Foreground="#7F8C8D"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Background="#E8F4FD" 
-                                CornerRadius="8" 
-                                Padding="15,10"
-                                Margin="10,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="💬" FontSize="20" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="QuestionsCountText" 
-                                           Text="0" 
-                                           FontSize="18" 
-                                           FontWeight="Bold"
-                                           Foreground="#4A90E2"
-                                           Margin="8,0,5,0"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock Text="новых вопросов" 
-                                           FontSize="13"
-                                           Foreground="#7F8C8D"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
+                    
                 </Grid>
             </Border>
 
@@ -165,8 +124,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -179,7 +137,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Перейти к заказам" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="OrdersSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
 
@@ -187,8 +145,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -201,7 +158,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Перейти к клиентам" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="ClientsSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
 
@@ -209,8 +166,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -223,7 +179,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Перейти к вопросам" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="QuestionsSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
 
@@ -231,8 +187,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -245,7 +200,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Просмотреть статистику" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="StatisticsSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
 
@@ -253,8 +208,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -267,7 +221,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Перейти к поставкам" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="SuppliesSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
 
@@ -275,8 +229,7 @@
                         <Border Style="{StaticResource SectionCardStyle}"
                                 Width="280" 
                                 Height="250"
-                                MouseEnter="SectionCard_MouseEnter"
-                                MouseLeave="SectionCard_MouseLeave">
+                                >
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" 
                                                   Opacity="0.1" 
@@ -289,7 +242,7 @@
                                            Style="{StaticResource SectionDescriptionStyle}"/>
                                 <Button Content="Создать отчет" 
                                         Style="{StaticResource SectionButtonStyle}"
-                                        Click="ReportsSection_Click"/>
+                                        />
                             </StackPanel>
                         </Border>
                     </WrapPanel>
@@ -317,7 +270,7 @@
                                             Style="{StaticResource SectionButtonStyle}"
                                             Background="#95A5A6"
                                             Margin="20,0,0,0"
-                                            Click="BackToMain_Click"/>
+                                            />
                                 </StackPanel>
 
                                 <!-- Фильтры заказов -->
@@ -347,79 +300,19 @@
                                                      Padding="10"/>
                                             <Button Content="Применить фильтры" 
                                                     Style="{StaticResource SectionButtonStyle}"
-                                                    Click="ApplyOrderFilters_Click"/>
+                                                    />
                                             <Button Content="Сбросить" 
                                                     Style="{StaticResource SectionButtonStyle}"
                                                     Background="#95A5A6"
                                                     Margin="10,0,0,10"
-                                                    Click="ResetOrderFilters_Click"/>
+                                                    />
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Список заказов -->
-                                <DataGrid x:Name="OrdersDataGrid" 
-                                          AutoGenerateColumns="False"
-                                          CanUserAddRows="False"
-                                          CanUserDeleteRows="False"
-                                          IsReadOnly="True"
-                                          SelectionMode="Single"
-                                          SelectionUnit="FullRow"
-                                          RowStyle="{StaticResource DataGridRowStyle}"
-                                          ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-                                          Height="400"
-                                          Margin="0,0,0,15">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="№" 
-                                                            Binding="{Binding OrderId}" 
-                                                            Width="60"/>
-                                        <DataGridTextColumn Header="Клиент" 
-                                                            Binding="{Binding Client.User.Name}" 
-                                                            Width="150"/>
-                                        <DataGridTextColumn Header="Дата заказа" 
-                                                            Binding="{Binding OrderDate, StringFormat=dd.MM.yyyy}" 
-                                                            Width="100"/>
-                                        <DataGridTextColumn Header="Сумма" 
-                                                            Binding="{Binding TotalAmount, StringFormat=N0 ₽}" 
-                                                            Width="100"/>
-                                        <DataGridTextColumn Header="Статус" 
-                                                            Binding="{Binding Status.Name}" 
-                                                            Width="120"/>
-                                        <DataGridTemplateColumn Header="Действия" Width="200">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Button Content="Просмотреть" 
-                                                                Style="{StaticResource SectionButtonStyle}"
-                                                                Padding="8,4"
-                                                                FontSize="12"
-                                                                Tag="{Binding}"
-                                                                Click="ViewOrderDetails_Click"/>
-                                                        <Button Content="Изменить статус" 
-                                                                Style="{StaticResource SectionButtonStyle}"
-                                                                Padding="8,4"
-                                                                FontSize="12"
-                                                                Margin="5,0,0,0"
-                                                                Tag="{Binding}"
-                                                                Click="ChangeOrderStatus_Click"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                
 
-                                <!-- Кнопки управления -->
-                                <StackPanel Orientation="Horizontal" 
-                                            HorizontalAlignment="Right">
-                                    <Button Content="Экспорт в Excel" 
-                                            Style="{StaticResource SectionButtonStyle}"
-                                            Margin="0,0,10,0"
-                                            Click="ExportOrdersToExcel_Click"/>
-                                    <Button Content="Обновить список" 
-                                            Style="{StaticResource SectionButtonStyle}"
-                                            Click="RefreshOrders_Click"/>
-                                </StackPanel>
+                                
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -445,7 +338,7 @@
                                             Style="{StaticResource SectionButtonStyle}"
                                             Background="#95A5A6"
                                             Margin="20,0,0,0"
-                                            Click="BackToMain_Click"/>
+                                            />
                                 </StackPanel>
 
                                 <!-- Список клиентов -->
@@ -488,7 +381,7 @@
                                                             Padding="8,4"
                                                             FontSize="12"
                                                             Tag="{Binding}"
-                                                            Click="ViewClientDetails_Click"/>
+                                                            />
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
@@ -519,7 +412,7 @@
                                             Style="{StaticResource SectionButtonStyle}"
                                             Background="#95A5A6"
                                             Margin="20,0,0,0"
-                                            Click="BackToMain_Click"/>
+                                            />
                                 </StackPanel>
 
                                 <!-- Панель ответа на вопросы -->

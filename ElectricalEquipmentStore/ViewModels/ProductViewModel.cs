@@ -78,7 +78,6 @@ namespace ElectricalEquipmentStore.ViewModels
         {
             _productService = productService;
 
-            // Инициализация команд
             CategorySelectedCommand = new RelayCommand(async () => await CategorySelected());
             SearchCommand = new RelayCommand(async () => await Search());
             AddToCartCommand = new RelayCommand<Product>(AddToCart);
@@ -93,7 +92,6 @@ namespace ElectricalEquipmentStore.ViewModels
             {
                 IsLoading = true;
 
-                // Загружаем категории
                 var categories = await _productService.GetAllCategoriesAsync();
                 Categories.Clear();
                 foreach (var category in categories)
@@ -101,7 +99,6 @@ namespace ElectricalEquipmentStore.ViewModels
                     Categories.Add(category);
                 }
 
-                // Загружаем все товары
                 await LoadProductsAsync();
             }
             catch (Exception ex)
@@ -219,7 +216,6 @@ namespace ElectricalEquipmentStore.ViewModels
         }
     }
 
-    // Простая реализация RelayCommand
     public class RelayCommand : ICommand
     {
         private readonly Action _execute;

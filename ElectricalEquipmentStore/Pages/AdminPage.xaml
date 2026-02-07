@@ -9,7 +9,7 @@
       Title="AdminPage" Background="#F5F9FF">
 
     <Page.Resources>
-        <!-- Стили -->
+        
         <Style x:Key="TabButtonStyle" TargetType="RadioButton">
             <Setter Property="Template">
                 <Setter.Value>
@@ -142,7 +142,7 @@
         <!-- Контент -->
         <Border Grid.Row="1" Background="White" Margin="20">
             <Grid>
-                <!-- Товары -->
+                
                 <Grid x:Name="ProductsPanel" Visibility="Visible">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -150,7 +150,6 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Панель управления -->
                     <Border Grid.Row="0" 
                             Background="#F8FAFD" 
                             CornerRadius="5" 

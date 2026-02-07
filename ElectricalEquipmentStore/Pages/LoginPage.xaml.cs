@@ -27,7 +27,6 @@ namespace ElectricalEquipmentStore.Pages
         {
             InitializeComponent();
 
-            // Получаем сервисы через ServiceProvider
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var authService = serviceProvider.GetRequiredService<AuthService>();
 

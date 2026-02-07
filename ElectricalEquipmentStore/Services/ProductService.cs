@@ -18,7 +18,6 @@ namespace ElectricalEquipmentStore.Services
             _context = context;
         }
 
-        // Получить все товары с категориями и производителями
         public async Task<List<Product>> GetAllProductsAsync()
         {
             return await _context.Products
@@ -30,7 +29,6 @@ namespace ElectricalEquipmentStore.Services
                 .ToListAsync();
         }
 
-        // Получить товары по категории
         public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
         {
             return await _context.Products
@@ -42,7 +40,6 @@ namespace ElectricalEquipmentStore.Services
                 .ToListAsync();
         }
 
-        // Получить все категории
         public async Task<List<Category>> GetAllCategoriesAsync()
         {
             return await _context.Categories
@@ -50,7 +47,6 @@ namespace ElectricalEquipmentStore.Services
                 .ToListAsync();
         }
 
-        // Получить товар по ID
         public async Task<Product> GetProductByIdAsync(int id)
         {
             return await _context.Products
@@ -60,7 +56,6 @@ namespace ElectricalEquipmentStore.Services
                 .FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
-        // Поиск товаров
         public async Task<List<Product>> SearchProductsAsync(string searchTerm)
         {
             return await _context.Products

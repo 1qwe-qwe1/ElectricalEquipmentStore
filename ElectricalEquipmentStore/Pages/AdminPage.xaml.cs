@@ -108,7 +108,6 @@ namespace ElectricalEquipmentStore.Pages
 
                 ProductsGrid.ItemsSource = products;
 
-                // Загружаем данные для ComboBox
                 var categories = await _context.Categories.OrderBy(c => c.Name).ToListAsync();
                 var manufacturers = await _context.Manufacturers.OrderBy(m => m.Name).ToListAsync();
                 var statuses = await _context.ProductStatuses.OrderBy(s => s.Name).ToListAsync();
@@ -138,7 +137,7 @@ namespace ElectricalEquipmentStore.Pages
         {
             ClearProductForm();
             ProductFormPanel.Visibility = Visibility.Visible;
-            SaveProductBtn.Content = "💾 Добавить";
+            SaveProductBtn.Content = "Добавить";
         }
 
         private void EditProduct_Click(object sender, RoutedEventArgs e)
@@ -147,7 +146,7 @@ namespace ElectricalEquipmentStore.Pages
             {
                 LoadProductToForm(_selectedProduct);
                 ProductFormPanel.Visibility = Visibility.Visible;
-                SaveProductBtn.Content = "💾 Сохранить изменения";
+                SaveProductBtn.Content = "Сохранить изменения";
             }
         }
 
@@ -191,7 +190,7 @@ namespace ElectricalEquipmentStore.Pages
 
             try
             {
-                if (_selectedProduct == null) // Добавление нового товара
+                if (_selectedProduct == null)
                 {
                     var newProduct = new Product
                     {
@@ -202,14 +201,14 @@ namespace ElectricalEquipmentStore.Pages
                         ManufacturerId = ((Manufacturer)ProductManufacturer.SelectedItem).ManufacturerId,
                         StatusId = ((ProductStatus)ProductStatus.SelectedItem).StatusProductId,
                         StockQuantity = int.Parse(ProductQuantity.Text),
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.Now,
                         Image = "default.png",
                         Description = ""
                     };
 
                     _context.Products.Add(newProduct);
                 }
-                else // Редактирование существующего товара
+                else
                 {
                     _selectedProduct.Sku = ProductSku.Text.Trim();
                     _selectedProduct.Name = ProductName.Text.Trim();
@@ -218,7 +217,7 @@ namespace ElectricalEquipmentStore.Pages
                     _selectedProduct.ManufacturerId = ((Manufacturer)ProductManufacturer.SelectedItem).ManufacturerId;
                     _selectedProduct.StatusId = ((ProductStatus)ProductStatus.SelectedItem).StatusProductId;
                     _selectedProduct.StockQuantity = int.Parse(ProductQuantity.Text);
-                    _selectedProduct.UpdatedAt = DateTime.UtcNow;
+                    _selectedProduct.UpdatedAt = DateTime.Now;
 
                     _context.Products.Update(_selectedProduct);
                 }
@@ -232,13 +231,10 @@ namespace ElectricalEquipmentStore.Pages
             }
             catch (Exception ex)
             {
-                // ВАЖНО: Сбрасываем состояние контекста при ошибке
                 _context.ChangeTracker.Clear();
 
-                // Также обнуляем _selectedProduct
                 _selectedProduct = null;
 
-                // Очищаем форму
                 ClearProductForm();
 
                 MessageBox.Show($"Ошибка сохранения товара: {ex.Message}", "Ошибка",
@@ -386,7 +382,6 @@ namespace ElectricalEquipmentStore.Pages
 
                     var stackPanel = new StackPanel { Margin = new Thickness(20) };
 
-                    // Статус заказа
                     stackPanel.Children.Add(new TextBlock
                     {
                         Text = "Статус заказа:",
@@ -404,7 +399,6 @@ namespace ElectricalEquipmentStore.Pages
                     };
                     stackPanel.Children.Add(statusCombo);
 
-                    // Статус оплаты
                     stackPanel.Children.Add(new TextBlock
                     {
                         Text = "Статус оплаты:",
@@ -422,7 +416,6 @@ namespace ElectricalEquipmentStore.Pages
                     };
                     stackPanel.Children.Add(paymentCombo);
 
-                    // Комментарий
                     stackPanel.Children.Add(new TextBlock
                     {
                         Text = "Комментарий:",
@@ -440,7 +433,6 @@ namespace ElectricalEquipmentStore.Pages
                     };
                     stackPanel.Children.Add(notesBox);
 
-                    // Кнопки
                     var buttonPanel = new StackPanel
                     {
                         Orientation = Orientation.Horizontal,
@@ -593,7 +585,7 @@ namespace ElectricalEquipmentStore.Pages
 
                 try
                 {
-                    if (_selectedSupplier == null) // Добавление нового поставщика
+                    if (_selectedSupplier == null)
                     {
                         var newSupplier = new Supplier
                         {
@@ -606,7 +598,7 @@ namespace ElectricalEquipmentStore.Pages
 
                         _context.Suppliers.Add(newSupplier);
                     }
-                    else // Редактирование существующего поставщика
+                    else
                     {
                         _selectedSupplier.Name = SupplierName.Text.Trim();
                         _selectedSupplier.Phone = SupplierPhone.Text.Trim();

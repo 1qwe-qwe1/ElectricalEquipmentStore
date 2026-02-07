@@ -29,7 +29,6 @@ namespace ElectricalEquipmentStore.Pages
         private int? _selectedCategoryId = null;
         private string _currentSearchText = "";
 
-        // Конструктор с внедрением зависимости
         public ClientPage(AppDbContext context)
         {
             _context = context;
@@ -46,10 +45,9 @@ namespace ElectricalEquipmentStore.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            // Отменяем все операции при закрытии страницы
             _searchCts?.Cancel();
             _searchCts?.Dispose();
-            _context?.Dispose(); // Освобождаем контекст при закрытии страницы
+            _context?.Dispose();
         }
 
         private async Task LoadCategoriesAsync()
@@ -57,11 +55,10 @@ namespace ElectricalEquipmentStore.Pages
             try
             {
                 _categories = await _context.Categories
-                    .AsNoTracking() // Только для чтения
+                    .AsNoTracking()
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                // Обновляем ComboBox в UI потоке
                 await Dispatcher.InvokeAsync(() =>
                 {
                     CategoryComboBox.Items.Clear();
@@ -93,21 +90,18 @@ namespace ElectricalEquipmentStore.Pages
                     NoProductsPanel.Visibility = Visibility.Collapsed;
                 });
 
-                // Используем AsNoTracking() для операций только для чтения
                 IQueryable<Product> query = _context.Products
-                    .AsNoTracking() // Важно: не отслеживаем изменения
+                    .AsNoTracking()
                     .Include(p => p.Category)
                     .Include(p => p.Manufacturer)
                     .Include(p => p.Status)
                     .Where(p => p.StockQuantity > 0);
 
-                // Фильтрация по категории
                 if (_selectedCategoryId.HasValue && _selectedCategoryId > 0)
                 {
                     query = query.Where(p => p.CategoryId == _selectedCategoryId.Value);
                 }
 
-                // Фильтрация по поиску
                 if (!string.IsNullOrWhiteSpace(_currentSearchText))
                 {
                     var searchTextLower = _currentSearchText.ToLower();
@@ -121,7 +115,6 @@ namespace ElectricalEquipmentStore.Pages
                     .OrderBy(p => p.Name)
                     .ToListAsync();
 
-                // Отображаем товары в UI потоке
                 await Dispatcher.InvokeAsync(() =>
                 {
                     foreach (var product in products)
@@ -151,8 +144,6 @@ namespace ElectricalEquipmentStore.Pages
             }
         }
 
-        // Остальной код без изменений (CreateProductCard, AddToCart, GetEmojiForCategory)
-
         private Border CreateProductCard(Product product)
         {
             var border = new Border
@@ -164,7 +155,6 @@ namespace ElectricalEquipmentStore.Pages
                 Cursor = System.Windows.Input.Cursors.Hand
             };
 
-            // Эффект при наведении
             border.MouseEnter += (s, e) =>
             {
                 border.Background = new SolidColorBrush(Color.FromRgb(245, 249, 255));
@@ -179,7 +169,6 @@ namespace ElectricalEquipmentStore.Pages
 
             var stackPanel = new StackPanel();
 
-            // Иконка товара
             var iconBorder = new Border
             {
                 Height = 90,
@@ -201,7 +190,6 @@ namespace ElectricalEquipmentStore.Pages
             iconBorder.Child = iconText;
             stackPanel.Children.Add(iconBorder);
 
-            // Название товара
             var nameText = new TextBlock
             {
                 Text = product.Name,
@@ -214,7 +202,6 @@ namespace ElectricalEquipmentStore.Pages
             };
             stackPanel.Children.Add(nameText);
 
-            // Производитель
             if (product.Manufacturer != null)
             {
                 var manufacturerText = new TextBlock
@@ -228,7 +215,6 @@ namespace ElectricalEquipmentStore.Pages
                 stackPanel.Children.Add(manufacturerText);
             }
 
-            // Цена
             var priceText = new TextBlock
             {
                 Text = $"{product.Price:N0} ₽",
@@ -239,7 +225,6 @@ namespace ElectricalEquipmentStore.Pages
             };
             stackPanel.Children.Add(priceText);
 
-            // Кнопка "В корзину"
             var button = new Button
             {
                 Content = "В корзину",
@@ -255,7 +240,6 @@ namespace ElectricalEquipmentStore.Pages
                 }
             };
 
-            // Эффект при наведении на кнопку
             button.MouseEnter += (s, e) =>
             {
                 button.Background = new SolidColorBrush(Color.FromRgb(53, 122, 232));
@@ -274,7 +258,6 @@ namespace ElectricalEquipmentStore.Pages
 
         private void AddToCart(Product product)
         {
-            // Здесь будет логика добавления в корзину
             MessageBox.Show($"Товар '{product.Name}' добавлен в корзину!\nЦена: {product.Price:N0} ₽",
                 "Товар добавлен",
                 MessageBoxButton.OK,
@@ -306,18 +289,16 @@ namespace ElectricalEquipmentStore.Pages
             {
                 _selectedCategoryId = (int?)selectedCategory.CategoryId;
             }
-            else if (CategoryComboBox.SelectedIndex == 0) // "Все товары"
+            else if (CategoryComboBox.SelectedIndex == 0)
             {
                 _selectedCategoryId = null;
             }
 
-            // Загружаем товары с учетом выбранной категории
             await LoadProductsAsync();
         }
 
         private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Отменяем предыдущий поиск
             _searchCts?.Cancel();
             _searchCts?.Dispose();
             _searchCts = new System.Threading.CancellationTokenSource();
@@ -327,10 +308,8 @@ namespace ElectricalEquipmentStore.Pages
 
             try
             {
-                // Ждем 500ms после последнего ввода (дебаунс)
                 await Task.Delay(500, _searchCts.Token);
 
-                // Если отмена не была запрошена, выполняем поиск
                 if (!_searchCts.Token.IsCancellationRequested)
                 {
                     await LoadProductsAsync();
@@ -338,7 +317,7 @@ namespace ElectricalEquipmentStore.Pages
             }
             catch (TaskCanceledException)
             {
-                // Поиск был отменен - ничего не делаем
+                
             }
         }
 

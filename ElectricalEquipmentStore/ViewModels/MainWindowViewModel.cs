@@ -41,16 +41,14 @@ namespace ElectricalEquipmentStore.ViewModels
         {
             _serviceProvider = serviceProvider;
 
-            // Получаем текущего пользователя
             var currentUser = Application.Current.Properties["CurrentUser"] as Models.User;
             CurrentUserName = $"{currentUser?.Name} {currentUser?.Surname}";
 
-            // Устанавливаем видимость элементов по роли
             switch (role)
             {
                 case "Администратор":
                     IsAdmin = true;
-                    IsEmployee = true; // Админ видит всё
+                    IsEmployee = true;
                     break;
                 case "Сотрудник":
                     IsEmployee = true;
@@ -60,12 +58,9 @@ namespace ElectricalEquipmentStore.ViewModels
                     break;
             }
 
-            // ВАЖНО: Изменяем начальное состояние
-            // По умолчанию шапка скрыта, пока не загрузится другая страница
             IsHeaderVisible = false;
             AreClientButtonsVisible = false;
 
-            // Загружаем стартовую страницу (но только если есть роль)
             if (!string.IsNullOrEmpty(role))
             {
                 NavigateToRolePage(role);
@@ -74,7 +69,6 @@ namespace ElectricalEquipmentStore.ViewModels
 
         private void NavigateToRolePage(string role)
         {
-            // Находим главное окно
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
             if (mainWindow == null) return;
 
@@ -99,13 +93,10 @@ namespace ElectricalEquipmentStore.ViewModels
         {
             _currentPageType = pageType;
 
-            // Шапка не показывается только на странице логина
             IsHeaderVisible = pageType != typeof(LoginPage);
 
-            // Кнопки "Корзина" и "Мои заказы" показываются только на странице клиента
             AreClientButtonsVisible = pageType == typeof(ClientPage);
 
-            // Обновляем возможность возврата (если нужно)
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
             CanGoBack = mainWindow?.MainFrame.CanGoBack == true;
         }
@@ -113,18 +104,15 @@ namespace ElectricalEquipmentStore.ViewModels
         [RelayCommand]
         private void Logout()
         {
-            // Очищаем данные пользователя
             Application.Current.Properties.Remove("CurrentUser");
             Application.Current.Properties.Remove("UserRole");
 
-            // Находим главное окно
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
             if (mainWindow != null)
             {
                 var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
                 mainWindow.MainFrame.Navigate(loginPage);
 
-                // Обновляем состояние ViewModel
                 IsHeaderVisible = false;
                 AreClientButtonsVisible = false;
                 IsAdmin = false;

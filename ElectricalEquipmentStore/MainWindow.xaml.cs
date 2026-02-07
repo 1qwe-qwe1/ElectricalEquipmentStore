@@ -26,10 +26,8 @@ namespace ElectricalEquipmentStore
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Получаем роль пользователя из Application.Properties
             var role = Application.Current.Properties["UserRole"] as string;
 
-            // Создаем ViewModel с передачей IServiceProvider
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var viewModel = new ViewModels.MainWindowViewModel(role, serviceProvider);
             DataContext = viewModel;
@@ -43,19 +41,16 @@ namespace ElectricalEquipmentStore
 
         public Frame MainFrame => MainContentFrame;
 
-        // Обработчики событий навигации (если они у вас есть в XAML)
         
 
        private void MainContentFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            // Обновляем состояние ViewModel
             if (DataContext is ViewModels.MainWindowViewModel viewModel)
             {
                 viewModel.UpdateNavigationState(e.Content.GetType());
             }
         }
 
-        // Обработчики для кнопок навигации (если они у вас в XAML)
         /*private void CatalogButton_Click(object sender, RoutedEventArgs e)
         {
             var serviceProvider = (Application.Current as App)!.ServiceProvider;

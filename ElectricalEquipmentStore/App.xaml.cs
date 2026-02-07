@@ -27,25 +27,22 @@ namespace ElectricalEquipmentStore
             {
                 Console.WriteLine("=== ЗАПУСК ПРИЛОЖЕНИЯ ===");
 
-                // 1. Проверяем подключение к БД
                 if (!CheckDatabaseConnection())
                 {
                     Shutdown();
                     return;
                 }
 
-                // 2. Настройка DI контейнера
                 var services = new ServiceCollection();
                 ConfigureServices(services);
                 ServiceProvider = services.BuildServiceProvider();
 
-                // 3. Создаем и показываем главное окно
                 var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
                 mainWindow.Show();
 
                 mainWindow.MainFrame.Navigate(new LoginPage());
 
-                Console.WriteLine("✅ Приложение успешно запущено");
+                Console.WriteLine("Приложение успешно запущено");
             }
             catch (Exception ex)
             {
@@ -57,23 +54,19 @@ namespace ElectricalEquipmentStore
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // DbContext
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Config.ConnectionString),
                 ServiceLifetime.Transient);
 
-            // Сервисы
             services.AddTransient<AuthService>();
             services.AddTransient<ProductService>();
 
-            // Окна и страницы
             services.AddTransient<MainWindow>();
             services.AddTransient<LoginPage>();
             services.AddTransient<AdminPage>();
             services.AddTransient<EmployeePage>();
             services.AddTransient<ClientPage>();
 
-            // ViewModels
             services.AddTransient<LoginViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ProductViewModel>();
@@ -103,7 +96,7 @@ namespace ElectricalEquipmentStore
                 try
                 {
                     connection.Open();
-                    Console.WriteLine("✅ Подключение к PostgreSQL установлено");
+                    Console.WriteLine("Подключение к PostgreSQL установлено");
 
                     using var cmd = new NpgsqlCommand("SELECT version();", connection);
                     var version = cmd.ExecuteScalar()?.ToString();

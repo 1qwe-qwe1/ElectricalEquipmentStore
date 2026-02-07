@@ -32,7 +32,6 @@ namespace ElectricalEquipmentStore.Pages
         {
             InitializeComponent();
 
-            // Создаем контекст БД
             _context = new AppDbContext();
         }
 
@@ -48,12 +47,10 @@ namespace ElectricalEquipmentStore.Pages
                 LoadingProgressBar.Visibility = Visibility.Visible;
                 NoProductsText.Visibility = Visibility.Collapsed;
 
-                // Загружаем категории
                 _allCategories = await _context.Categories
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                // Обновляем ComboBox
                 CategoryComboBox.Items.Clear();
                 CategoryComboBox.Items.Add(new { Name = "Все категории" });
                 foreach (var category in _allCategories)
@@ -62,7 +59,6 @@ namespace ElectricalEquipmentStore.Pages
                 }
                 CategoryComboBox.SelectedIndex = 0;
 
-                // Загружаем все товары
                 await LoadProductsAsync();
 
                 LoadingProgressBar.Visibility = Visibility.Collapsed;
@@ -97,14 +93,12 @@ namespace ElectricalEquipmentStore.Pages
                     .OrderBy(p => p.Name)
                     .ToListAsync();
 
-                // Отображаем товары
                 foreach (var product in _allProducts)
                 {
                     var productCard = CreateProductCard(product);
                     ProductsPanel.Children.Add(productCard);
                 }
 
-                // Показываем сообщение, если товаров нет
                 NoProductsText.Visibility = _allProducts.Count == 0 ?
                     Visibility.Visible : Visibility.Collapsed;
             }
@@ -125,7 +119,6 @@ namespace ElectricalEquipmentStore.Pages
 
             var stackPanel = new StackPanel();
 
-            // Изображение (заглушка)
             var imageBorder = new Border
             {
                 Height = 180,
@@ -146,7 +139,6 @@ namespace ElectricalEquipmentStore.Pages
             imageBorder.Child = textBlock;
             stackPanel.Children.Add(imageBorder);
 
-            // Название
             stackPanel.Children.Add(new TextBlock
             {
                 Text = product.Name,
@@ -156,7 +148,6 @@ namespace ElectricalEquipmentStore.Pages
                 Margin = new Thickness(0, 0, 0, 5)
             });
 
-            // Описание
             if (!string.IsNullOrEmpty(product.Description))
             {
                 stackPanel.Children.Add(new TextBlock
@@ -169,7 +160,6 @@ namespace ElectricalEquipmentStore.Pages
                 });
             }
 
-            // Производитель
             if (product.Manufacturer != null)
             {
                 stackPanel.Children.Add(new TextBlock
@@ -181,7 +171,6 @@ namespace ElectricalEquipmentStore.Pages
                 });
             }
 
-            // Цена и количество
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -208,13 +197,12 @@ namespace ElectricalEquipmentStore.Pages
             grid.Children.Add(quantityText);
             stackPanel.Children.Add(grid);
 
-            // Кнопка "В корзину"
             var button = new Button
             {
                 Content = "В корзину",
                 Style = (Style)FindResource("CatalogButtonStyle"),
                 Margin = new Thickness(0, 10, 0, 0),
-                Tag = product // Сохраняем товар в Tag
+                Tag = product
             };
             button.Click += AddToCartButton_Click;
             stackPanel.Children.Add(button);
@@ -244,7 +232,7 @@ namespace ElectricalEquipmentStore.Pages
             {
                 await LoadProductsAsync((int?)selectedCategory.CategoryId);
             }
-            else if (CategoryComboBox.SelectedIndex == 0) // "Все категории"
+            else if (CategoryComboBox.SelectedIndex == 0)
             {
                 await LoadProductsAsync();
             }
@@ -320,7 +308,6 @@ namespace ElectricalEquipmentStore.Pages
             await LoadProductsAsync();
         }
 
-        // Не забываем освободить ресурсы
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);

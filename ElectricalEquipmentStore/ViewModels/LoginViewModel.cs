@@ -31,7 +31,6 @@ namespace ElectricalEquipmentStore.ViewModels
         [ObservableProperty]
         private bool _isLoading = false;
 
-        // Конструктор с двумя параметрами
         public LoginViewModel(AuthService authService, IServiceProvider serviceProvider)
         {
             _authService = authService;
@@ -59,14 +58,11 @@ namespace ElectricalEquipmentStore.ViewModels
 
                 if (user != null)
                 {
-                    // Успешная авторизация
                     var role = _authService.GetUserRole(user);
 
-                    // Сохраняем информацию о текущем пользователе
                     Application.Current.Properties["CurrentUser"] = user;
                     Application.Current.Properties["UserRole"] = role;
 
-                    // Навигация на главную страницу в зависимости от роли
                     NavigateToMainPage(role);
                 }
                 else
@@ -86,7 +82,6 @@ namespace ElectricalEquipmentStore.ViewModels
 
         private void NavigateToMainPage(string role)
         {
-            // Получаем главное окно
             var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
             if (mainWindow != null)
             {
@@ -105,11 +100,6 @@ namespace ElectricalEquipmentStore.ViewModels
                         mainWindow.MainFrame.Navigate(clientPage);
                         break;
                     default:
-                        // Если есть CatalogPage, добавьте его в DI контейнер
-                        // var catalogPage = _serviceProvider.GetRequiredService<CatalogPage>();
-                        // mainWindow.MainFrame.Navigate(catalogPage);
-
-                        // Или пока используем ClientPage по умолчанию
                         var defaultPage = _serviceProvider.GetRequiredService<ClientPage>();
                         mainWindow.MainFrame.Navigate(defaultPage);
                         break;

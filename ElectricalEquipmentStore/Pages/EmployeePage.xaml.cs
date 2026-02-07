@@ -28,15 +28,12 @@ namespace ElectricalEquipmentStore.Pages
 
         public EmployeePage(AppDbContext context)
         {
-            _context = context;
             InitializeComponent();
-            Loaded += Page_Loaded;
-            Unloaded += Page_Unloaded;
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+       /* private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadStatisticsAsync();
+           // await LoadStatisticsAsync();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -44,18 +41,16 @@ namespace ElectricalEquipmentStore.Pages
             _context?.Dispose();
         }
 
-        private async Task LoadStatisticsAsync()
+        /*private async Task LoadStatisticsAsync()
         {
             try
             {
-                // Загружаем статистику заказов (используем имя таблицы statuses)
                 var activeOrdersCount = await _context.Orders
                     .Include(o => o.Status)
                     .Where(o => o.Status.Name != "Доставлен" && o.Status.Name != "Отменен")
                     .CountAsync();
 
-                // Загружаем новые вопросы (в реальном приложении нужна таблица Questions)
-                var newQuestionsCount = 5; // Примерное значение
+                var newQuestionsCount = 5;
 
                 Dispatcher.Invoke(() =>
                 {
@@ -165,7 +160,6 @@ namespace ElectricalEquipmentStore.Pages
         {
             try
             {
-                // Загружаем статусы заказов для фильтра (из таблицы statuses)
                 var statuses = await _context.OrderStatuses.ToListAsync();
                 Dispatcher.Invoke(() =>
                 {
@@ -173,24 +167,22 @@ namespace ElectricalEquipmentStore.Pages
                     OrderStatusFilter.SelectedIndex = 0;
                 });
 
-                // Загружаем заказы с клиентами и статусами
                 var orders = await _context.Orders
                     .Include(o => o.Client)
                     .ThenInclude(c => c.User)
                     .Include(o => o.Status)
                     .Include(o => o.OrderProducts)
                     .ThenInclude(op => op.Product)
-                    .OrderByDescending(o => o.CreatedAt) // Используем OrderDate вместо CreatedAt
+                    .OrderByDescending(o => o.CreatedAt) 
                     .ToListAsync();
 
-                // Вычисляем общую сумму для каждого заказа
-               /* foreach (var order in orders)
+                foreach (var order in orders)
                 {
                     if (order.OrderProducts != null && order.OrderProducts.Any())
                     {
                         order.TotalAmount = order.OrderProducts.Sum(op => op.Quantity * op.UnitPrice);
                     }
-                }*/
+                }
 
                 Dispatcher.Invoke(() =>
                 {
@@ -222,7 +214,6 @@ namespace ElectricalEquipmentStore.Pages
 
         private void ApplyOrderFilters_Click(object sender, RoutedEventArgs e)
         {
-            // Реализация фильтрации заказов
             MessageBox.Show("Фильтрация заказов в разработке", "Информация",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -258,19 +249,16 @@ namespace ElectricalEquipmentStore.Pages
 
             var stackPanel = new StackPanel { Margin = new Thickness(20) };
 
-            // Информация о заказе
             stackPanel.Children.Add(CreateDetailRow("Номер заказа:", order.OrderId.ToString()));
             stackPanel.Children.Add(CreateDetailRow("Клиент:", $"{order.Client?.User?.Name} {order.Client?.User?.Surname}"));
             stackPanel.Children.Add(CreateDetailRow("Дата заказа:", order.CreatedAt.ToString("dd.MM.yyyy HH:mm")));
             stackPanel.Children.Add(CreateDetailRow("Статус:", order.Status?.Name ?? "Не указан"));
             stackPanel.Children.Add(CreateDetailRow("Сумма:", $"{order.TotalAmount:N0} ₽"));
 
-            // Формируем адрес доставки
             var deliveryAddress = $"{order.DeliveryCity}, {order.DeliveryStreet}, д. {order.DeliveryBuilding}" +
                                  (order.DeliveryApartment.HasValue ? $", кв. {order.DeliveryApartment.Value}" : "");
             stackPanel.Children.Add(CreateDetailRow("Адрес доставки:", deliveryAddress));
 
-            // Товары в заказе
             stackPanel.Children.Add(new TextBlock
             {
                 Text = "Товары в заказе:",
@@ -309,7 +297,6 @@ namespace ElectricalEquipmentStore.Pages
 
                     productsGrid.Children.Add(new TextBlock
                     {
-                       // Text = $"{op.UnitPrice:N0} ₽",
                         Margin = new Thickness(10, 5, 0, 0)
                     });
                     Grid.SetColumn(productsGrid.Children[^1], 2);
@@ -317,7 +304,6 @@ namespace ElectricalEquipmentStore.Pages
 
                     productsGrid.Children.Add(new TextBlock
                     {
-                       // Text = $"{(op.Quantity * op.UnitPrice):N0} ₽",
                         FontWeight = FontWeights.Bold,
                         Margin = new Thickness(10, 5, 0, 0)
                     });
@@ -374,7 +360,7 @@ namespace ElectricalEquipmentStore.Pages
                 {
                     ItemsSource = statuses,
                     DisplayMemberPath = "Name",
-                    SelectedValuePath = "StatusId", // Исправлено с OrderStatusId на StatusId
+                    SelectedValuePath = "StatusId",
                     SelectedValue = order.StatusId,
                     Margin = new Thickness(0, 0, 0, 20)
                 };
@@ -393,7 +379,7 @@ namespace ElectricalEquipmentStore.Pages
                     try
                     {
                         var selectedStatus = (OrderStatus)statusComboBox.SelectedItem;
-                        order.StatusId = selectedStatus.StatusId; // Исправлено с OrderStatusId на StatusId
+                        order.StatusId = selectedStatus.StatusId;
 
                         await _context.SaveChangesAsync();
                         await LoadOrdersAsync();
@@ -445,14 +431,13 @@ namespace ElectricalEquipmentStore.Pages
                         .ThenInclude(o => o.OrderProducts)
                     .ToListAsync();
 
-                // Вычисляем статистику для каждого клиента
                 /*foreach (var client in clients)
                 {
                     client.TotalOrders = client.Orders?.Count ?? 0;
                     client.TotalSpent = client.Orders?
                         .Sum(o => o.OrderProducts?
                             .Sum(op => op.Quantity * op.UnitPrice) ?? 0) ?? 0;
-                }*/
+                }
 
                 Dispatcher.Invoke(() =>
                 {
@@ -486,12 +471,10 @@ namespace ElectricalEquipmentStore.Pages
 
             var stackPanel = new StackPanel { Margin = new Thickness(20) };
 
-            // Информация о клиенте
             stackPanel.Children.Add(CreateDetailRow("ФИО:", $"{client.User?.Name} {client.User?.Surname}"));
             stackPanel.Children.Add(CreateDetailRow("Email:", client.User?.Email ?? "Не указан"));
             stackPanel.Children.Add(CreateDetailRow("Телефон:", client.PhoneNumber ?? "Не указан"));
 
-            // Формируем адрес клиента
             var address = $"{client.City ?? ""}, {client.Street ?? ""}" +
                          (!string.IsNullOrEmpty(client.Building) ? $", д. {client.Building}" : "") +
                          (client.Apartment.HasValue ? $", кв. {client.Apartment.Value}" : "");
@@ -501,7 +484,6 @@ namespace ElectricalEquipmentStore.Pages
             stackPanel.Children.Add(CreateDetailRow("Адрес:", address));
           //  stackPanel.Children.Add(CreateDetailRow("Дата регистрации:", client.RegistrationDate.ToString("dd.MM.yyyy")));
 
-            // Статистика
             stackPanel.Children.Add(new TextBlock
             {
                 Text = "Статистика:",
@@ -522,8 +504,6 @@ namespace ElectricalEquipmentStore.Pages
 
         private void LoadQuestionsAsync()
         {
-            // В реальном приложении здесь будет загрузка вопросов из базы данных
-            // Пока используем тестовые данные
             var testQuestions = new List<QuestionModel>
             {
                 new QuestionModel { Question = "Когда будет доставлен мой заказ №12345?", ClientName = "Иван Иванов", Date = DateTime.Now.AddHours(-2) },
@@ -539,7 +519,6 @@ namespace ElectricalEquipmentStore.Pages
             });
         }
 
-        // Модель для вопросов (временная)
         private class QuestionModel
         {
             public string Question { get; set; }
@@ -547,6 +526,6 @@ namespace ElectricalEquipmentStore.Pages
             public DateTime Date { get; set; }
         }
 
-        #endregion
+        #endregion */
     }
 }

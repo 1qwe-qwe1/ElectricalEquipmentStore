@@ -21,7 +21,7 @@ namespace ElectricalEquipmentStore
                 var envPath = ".env";
                 if (!File.Exists(envPath))
                 {
-                    Console.WriteLine("❌ .env файл не найден!");
+                    Console.WriteLine(".env файл не найден!");
                     CreateDefaultEnvFile();
                 }
 
@@ -40,7 +40,7 @@ namespace ElectricalEquipmentStore
 
                 Console.WriteLine("\nЗагружаем через DotNetEnv...");
                 Env.Load();
-                Console.WriteLine("✅ Загружено");
+                Console.WriteLine("Загружено");
 
                 Console.WriteLine("\nПроверка загруженных значений:");
                 Console.WriteLine($"DB_HOST: '{Env.GetString("DB_HOST")}' (длина: {Env.GetString("DB_HOST")?.Length})");
@@ -70,7 +70,7 @@ DB_USER=postgres
 DB_PASSWORD=782566912";
 
                 File.WriteAllText(".env", defaultEnv, System.Text.Encoding.UTF8);
-                Console.WriteLine("📝 Создан новый .env файл");
+                Console.WriteLine("Создан новый .env файл");
             }
             catch (Exception ex)
             {
