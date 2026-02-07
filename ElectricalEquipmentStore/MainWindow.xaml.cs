@@ -43,10 +43,10 @@ namespace ElectricalEquipmentStore
                 MainContentFrame.GoBack();
         }
 
-        private void MainContentFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+       private void MainContentFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             // Обновляем видимость кнопки "Назад"
-            BackButton.Visibility = MainContentFrame.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+           // BackButton.Visibility = MainContentFrame.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
         }
 
         // Обработчики для кнопок навигации (если они у вас в XAML)
@@ -91,11 +91,9 @@ namespace ElectricalEquipmentStore
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            // Очищаем данные пользователя
             Application.Current.Properties.Remove("CurrentUser");
             Application.Current.Properties.Remove("UserRole");
 
-            // Переходим на страницу логина
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
             MainContentFrame.Navigate(loginPage);
