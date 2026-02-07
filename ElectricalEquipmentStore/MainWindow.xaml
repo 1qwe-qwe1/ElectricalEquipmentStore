@@ -11,6 +11,7 @@
         Background="#F5F9FF">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- Стили -->
         <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
@@ -127,12 +128,12 @@
                         <Button x:Name="CartButton" 
                                 Content="Корзина" 
                                 Style="{StaticResource NavButtonStyle}"
-                                Click="CartButton_Click"/>
+                                Visibility="{Binding AreClientButtonsVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                         <Button x:Name="OrdersButton" 
                                 Content="Мои заказы" 
                                 Style="{StaticResource NavButtonStyle}"
-                                Click="OrdersButton_Click"/>
+                                Visibility="{Binding AreClientButtonsVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                     </StackPanel>
 
@@ -140,13 +141,13 @@
                     <StackPanel Grid.Column="2" 
                                 Orientation="Horizontal" 
                                 VerticalAlignment="Center">
-                        
 
-                        <Button x:Name="LogoutButton" 
+
+                        <Button Command="{Binding LogoutCommand}"
                                 Content="Выйти" 
                                 Style="{StaticResource NavButtonStyle}"
                                 Background="#E74C3C"
-                                Click="LogoutButton_Click"/>
+                                />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -155,7 +156,7 @@
             <Frame x:Name="MainContentFrame" 
                    Grid.Row="1" 
                    NavigationUIVisibility="Hidden"
-                   Navigated="MainContentFrame_Navigated"/>
+                   />
 
         </Grid>
     </Grid>

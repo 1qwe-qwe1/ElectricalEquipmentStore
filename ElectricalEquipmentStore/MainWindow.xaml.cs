@@ -31,26 +31,32 @@ namespace ElectricalEquipmentStore
 
             // Создаем ViewModel с передачей IServiceProvider
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
-            DataContext = new ViewModels.MainWindowViewModel(role, serviceProvider);
+            var viewModel = new ViewModels.MainWindowViewModel(role, serviceProvider);
+            DataContext = viewModel;
+            MainContentFrame.Navigated += MainContentFrame_Navigated;
+            
+            if (MainContentFrame.Content != null)
+            {
+                viewModel.UpdateNavigationState(MainContentFrame.Content.GetType());
+            }
         }
 
         public Frame MainFrame => MainContentFrame;
 
         // Обработчики событий навигации (если они у вас есть в XAML)
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (MainContentFrame.CanGoBack)
-                MainContentFrame.GoBack();
-        }
+        
 
        private void MainContentFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            // Обновляем видимость кнопки "Назад"
-           // BackButton.Visibility = MainContentFrame.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+            // Обновляем состояние ViewModel
+            if (DataContext is ViewModels.MainWindowViewModel viewModel)
+            {
+                viewModel.UpdateNavigationState(e.Content.GetType());
+            }
         }
 
         // Обработчики для кнопок навигации (если они у вас в XAML)
-        private void CatalogButton_Click(object sender, RoutedEventArgs e)
+        /*private void CatalogButton_Click(object sender, RoutedEventArgs e)
         {
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var clientPage = serviceProvider.GetRequiredService<Pages.ClientPage>();
@@ -97,6 +103,6 @@ namespace ElectricalEquipmentStore
             var serviceProvider = (Application.Current as App)!.ServiceProvider;
             var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
             MainContentFrame.Navigate(loginPage);
-        }
+        }*/
     }
 }
